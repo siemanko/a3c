@@ -63,12 +63,15 @@ class ExplorationSchedule(object):
         choice_idx = np.random.choice(len(self.schedules), p=[s[0] for s in self.schedules])
         self.current_schedule = self.schedules[choice_idx]
 
-    def should_be_random(self, steps):
+    def random_action_p(self, steps):
         assert self.current_schedule is not None, "must call reset first"
         _, initial, final, final_steps = self.current_schedule
         fraction_complete = min(steps / final_steps, 1.0)
         current_p = initial + (final - initial) * fraction_complete
-        return np.random.random() < current_p
+        return current_p
+
+    def should_be_random(self, steps):
+        return np.random.random() < self.random_action_p(steps)
 
     def __str__(self):
         ret = 'Exploration schedule:\n'
