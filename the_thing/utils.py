@@ -1,7 +1,9 @@
 import gym
 import numpy as np
 
+from contextlib import contextmanager
 from multiprocessing.managers import BaseManager
+from queue import Queue
 from threading import Thread, Lock
 
 def make_wraper(*args, **kwargs):
@@ -27,6 +29,21 @@ class AtomicInt(object):
     def get(self):
         return self._value
 
+class SharedResource(object):
+    def __init__(self, objs):
+        self.q = Queue()
+        while len(objs) > 0:
+            self.q.put(objs.pop())
+
+    @contextmanager
+    def lease(self):
+        r = None
+        try:
+            r = self.q.get()
+            yield r
+        finally:
+            if r is not None:
+                self.q.put(r)
 
 class ExplorationSchedule(object):
     def __init__(self, desc):
