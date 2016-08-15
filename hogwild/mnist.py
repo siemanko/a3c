@@ -137,7 +137,7 @@ def main(args):
             print ("")
         print ("Training done.")
 
-        test_accuracy = accuracy(data.iterate_test(), train=False)
+        test_accuracy = accuracy(session, graphs, data.iterate_test(), num_threads=args.num_threads, train=False)
         print ("    Average time per training epoch = %.3f s" % (train_total_time_sum / NUM_EPOCHS,))
         print ("    Test set accuracy               = %.1f %%" % (100.0 * test_accuracy,))
 
